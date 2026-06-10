@@ -362,12 +362,17 @@ nav{
 .video-wrap{
   width:100%;
   border-radius:4px;overflow:hidden;
-  background:rgba(255,255,255,0.03);
+  background:#000;
   border:1px solid rgba(201,135,42,0.2);
   margin-bottom:2rem;
-  padding:1.8rem 1.5rem;
-  display:flex;flex-direction:column;align-items:center;
-  gap:1rem;text-align:center;
+  position:relative;
+  padding-top:56.25%;
+}
+.video-wrap iframe{
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  border:none;
 }
 .video-thumb{font-size:3rem;opacity:0.6;}
 .video-title{
@@ -600,13 +605,7 @@ footer{
     <div class="gallery" id="mGallery"></div>
     <div class="video-label">Video documental</div>
     <div class="video-wrap" id="mVideoWrap">
-      <div class="video-thumb">▶</div>
-      <div class="video-title" id="mVideoTitle">Documental relacionado con la sala</div>
-      <a id="mVideoBtn" class="video-btn" href="#" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 1.86-.14 3.23-.44 4.17-.27.86-.87 1.46-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 18c-3.72 0-6.03-.14-6.94-.44a2.5 2.5 0 0 1-1.73-1.73c-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L3 12c0-1.86.14-3.23.44-4.17A2.5 2.5 0 0 1 5.17 6.1c.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5.73c3.72 0 6.03.14 6.94.44a2.5 2.5 0 0 1 1.62 1.73z"/></svg>
-        Ver en YouTube
-      </a>
-      <div class="video-note">Se abrirá en una nueva pestaña</div>
+      <iframe id="mVideoIframe" src="" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
     </div>
     <div class="highlights">
       <div class="highlights-title">Lo que encontrarás en esta sala</div>
@@ -640,7 +639,7 @@ const salas=[
       'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&q=80',
       'https://images.unsplash.com/photo-1608236415053-8c3640fe89a6?w=600&q=80'
     ],
-    video:'https://www.youtube.com/watch?v=dYgDJPNFwns',
+    video:'Zezshq8yvmU',
     videoTitle:'Civilizaciones prehispánicas de México — Historia y cultura',
     highlights:[
       'Escultura mexica: el Calendario Azteca o Piedra del Sol',
@@ -666,7 +665,7 @@ const salas=[
       'https://images.unsplash.com/photo-1585464231875-d9ef1f5ad396?w=600&q=80',
       'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'
     ],
-    video:'https://www.youtube.com/watch?v=nf3REugbroE',
+    video:'VWnFE1Whu8A',
     videoTitle:'Arte Colonial en México — Arquitectura barroca y mestizaje cultural',
     highlights:[
       'Arquitectura barroca: catedrales, conventos y haciendas',
@@ -692,7 +691,7 @@ const salas=[
       'https://images.unsplash.com/photo-1605000797499-95a51c5269ae?w=600&q=80',
       'https://images.unsplash.com/photo-1596460107916-430662021049?w=600&q=80'
     ],
-    video:'https://www.youtube.com/watch?v=9GQCZ-v3PgE',
+    video:'QzDKfB-G_Rk',
     videoTitle:'Día de Muertos — Patrimonio Cultural Inmaterial de la Humanidad',
     highlights:[
       'Día de Muertos: Patrimonio Cultural Inmaterial de la Humanidad',
@@ -718,7 +717,7 @@ const salas=[
       'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?w=600&q=80',
       'https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?w=600&q=80'
     ],
-    video:'https://www.youtube.com/watch?v=OvPpzxuoJ5Y',
+    video:'JrlalXQAot0',
     videoTitle:'Gastronomía Mexicana — Patrimonio UNESCO, sabores y tradición',
     highlights:[
       'El maíz: base sagrada de la civilización mesoamericana',
@@ -744,7 +743,7 @@ const salas=[
       'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80',
       'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80'
     ],
-    video:'https://www.youtube.com/watch?v=6yEFOBR_H44',
+    video:'UFce2voYYsQ',
     videoTitle:'Lenguas Indígenas de México — Náhuatl, Maya y más',
     highlights:[
       'Náhuatl: lengua del Imperio Azteca, aún hablan ~1.7 millones de personas',
@@ -770,7 +769,7 @@ const salas=[
       'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
       'https://images.unsplash.com/photo-1605000797499-95a51c5269ae?w=600&q=80'
     ],
-    video:'https://www.youtube.com/watch?v=WH4HXoFRSKQ',
+    video:'t7mr-qgu6Yk',
     videoTitle:'Patrimonio Vivo de México — Tradiciones y comunidades indígenas hoy',
     highlights:[
       'Artesanías: textiles, cerámica, orfebrería y trabajo en madera',
@@ -803,10 +802,9 @@ function openSala(i){
   const galleryEl=document.getElementById('mGallery');
   galleryEl.innerHTML=s.gallery.map(src=>`<img src="${src}" alt="${s.name}" loading="lazy" onerror="this.style.background='#2a2218';this.style.opacity='0.3';"/>`).join('');
 
-  // Video
-  const videoBtn=document.getElementById('mVideoBtn');
-  videoBtn.href=s.video;
-  document.getElementById('mVideoTitle').textContent=s.videoTitle||'Documental relacionado con esta sala';
+  // Video embed
+  const iframe = document.getElementById('mVideoIframe');
+  iframe.src = `https://www.youtube.com/embed/${s.video}?rel=0`;
 
   // Highlights
   const hlEl=document.getElementById('mHighlights');
@@ -820,6 +818,7 @@ function openSala(i){
 
 function closeSala(){
   document.getElementById('modalOverlay').classList.remove('open');
+  document.getElementById('mVideoIframe').src='';
   document.body.style.overflow='';
 }
 
