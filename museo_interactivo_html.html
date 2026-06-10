@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Museo Interactivo — De México para el Mundo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@300;400;500;600;700&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --obsidian:#1A1410;
+  --jade:#2D6A4F;
+  --jade-lt:#40916C;
+  --gold:#C9872A;
+  --gold-lt:#E9B96E;
+  --terra:#8B3A2A;
+  --stone:#F2EDE4;
+  --parch:#FAF6EE;
+  --ink:#2C2416;
+  --mist:#9C9080;
+}
+
+html{scroll-behavior:smooth;}
+body{font-family:'Raleway',sans-serif;background:var(--obsidian);color:var(--ink);overflow-x:hidden;}
+
+/* ── CURSOR GLOW ── */
+.cursor-glow{
+  width:300px;height:300px;
+  background:radial-gradient(circle,rgba(201,135,42,0.08) 0%,transparent 70%);
+  position:fixed;pointer-events:none;z-index:0;
+  transform:translate(-50%,-50%);transition:transform 0.1s;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(26,20,16,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(201,135,42,0.2);
+  padding:0.9rem 2rem;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.nav-brand{
+  font-family:'Cinzel',serif;
+  font-size:0.78rem;
+  letter-spacing:0.2em;
+  color:var(--gold);
+  text-transform:uppercase;
+}
+.nav-brand span{color:#888;font-weight:300;}
+.nav-links{display:flex;gap:1.5rem;}
+.nav-links a{
+  font-size:0.72rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:#888;
+  text-decoration:none;
+  transition:color 0.2s;
+}
+.nav-links a:hover{color:var(--gold);}
+
+/* ── HERO ── */
+#hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  text-align:center;
+  position:relative;
+  padding:6rem 2rem 4rem;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%,rgba(45,106,79,0.15) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 20% 80%,rgba(139,58,42,0.1) 0%,transparent 50%),
+    radial-gradient(ellipse 50% 50% at 80% 20%,rgba(201,135,42,0.08) 0%,transparent 50%);
+}
+.hero-glyph{
+  font-size:0.9rem;letter-spacing:0.8em;
+  color:var(--gold);opacity:0.4;
+  margin-bottom:1.5rem;
+  animation:fadeUp 1s ease both;
+}
+.hero-eyebrow{
+  font-family:'Cinzel',serif;
+  font-size:0.7rem;letter-spacing:0.4em;
+  text-transform:uppercase;
+  color:var(--gold-lt);
+  margin-bottom:1rem;
+  animation:fadeUp 1s 0.1s ease both;
+}
+.hero-title{
+  font-family:'Cinzel',serif;
+  font-size:clamp(2.5rem,7vw,5.5rem);
+  font-weight:900;
+  color:#fff;
+  line-height:1.0;
+  letter-spacing:0.02em;
+  animation:fadeUp 1s 0.2s ease both;
+}
+.hero-title span{
+  display:block;
+  color:var(--gold);
+  font-size:0.55em;
+  letter-spacing:0.15em;
+  margin-top:0.3em;
+}
+.hero-sub{
+  margin-top:1.5rem;
+  font-size:0.9rem;
+  color:#9A8F80;
+  letter-spacing:0.06em;
+  max-width:500px;
+  line-height:1.7;
+  animation:fadeUp 1s 0.3s ease both;
+}
+.hero-divider{
+  display:flex;align-items:center;gap:1rem;
+  margin:2rem auto;
+  max-width:300px;
+  animation:fadeUp 1s 0.4s ease both;
+}
+.hero-divider::before,.hero-divider::after{
+  content:'';flex:1;height:1px;background:rgba(201,135,42,0.4);
+}
+.hero-divider .gem{
+  width:8px;height:8px;background:var(--gold);
+  transform:rotate(45deg);
+}
+.scroll-cta{
+  display:inline-flex;align-items:center;gap:0.6rem;
+  font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--gold);
+  border:1px solid rgba(201,135,42,0.4);
+  padding:0.7rem 1.8rem;border-radius:2px;
+  text-decoration:none;
+  transition:all 0.3s;
+  animation:fadeUp 1s 0.5s ease both;
+}
+.scroll-cta:hover{background:rgba(201,135,42,0.1);border-color:var(--gold);}
+.scroll-cta .arrow{animation:bounce 2s infinite;}
+
+/* ── SALAS SECTION ── */
+#salas{
+  padding:5rem 2rem 4rem;
+  max-width:1100px;margin:0 auto;
+}
+.section-eyebrow{
+  text-align:center;
+  font-family:'Cinzel',serif;
+  font-size:0.65rem;letter-spacing:0.35em;
+  text-transform:uppercase;color:var(--mist);
+  margin-bottom:0.5rem;
+}
+.section-title{
+  text-align:center;
+  font-family:'Cinzel',serif;
+  font-size:clamp(1.4rem,3vw,2rem);
+  color:#fff;font-weight:700;
+  margin-bottom:3rem;
+}
+.section-title span{color:var(--gold);}
+
+.salas-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;
+}
+
+.sala-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(201,135,42,0.15);
+  border-radius:6px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+  position:relative;
+}
+.sala-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(201,135,42,0.5);
+  background:rgba(201,135,42,0.05);
+  box-shadow:0 20px 40px rgba(0,0,0,0.4);
+}
+.sala-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;
+  height:2px;
+  opacity:0;transition:opacity 0.3s;
+}
+.sala-card:hover::before{opacity:1;}
+.s1::before{background:var(--terra);}
+.s2::before{background:#6B4C1E;}
+.s3::before{background:var(--gold);}
+.s4::before{background:#7A5C2E;}
+.s5::before{background:var(--jade);}
+.s6::before{background:var(--jade-lt);}
+
+.sala-img{
+  width:100%;height:180px;
+  object-fit:cover;
+  filter:brightness(0.7) saturate(0.8);
+  transition:filter 0.4s;
+}
+.sala-card:hover .sala-img{filter:brightness(0.85) saturate(1);}
+
+.sala-body{padding:1.4rem;}
+.sala-num{
+  font-family:'Cinzel',serif;
+  font-size:0.6rem;letter-spacing:0.25em;
+  color:var(--mist);margin-bottom:0.3rem;
+}
+.sala-name{
+  font-family:'Cinzel',serif;
+  font-size:0.95rem;font-weight:700;
+  color:#fff;margin-bottom:0.5rem;line-height:1.3;
+}
+.sala-theme{
+  font-size:0.7rem;font-weight:600;
+  color:var(--jade-lt);
+  text-transform:uppercase;letter-spacing:0.08em;
+  margin-bottom:0.6rem;
+}
+.sala-preview{
+  font-size:0.8rem;color:#8A7E6A;
+  line-height:1.6;
+}
+.sala-enter{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  margin-top:1rem;
+  font-size:0.7rem;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--gold);
+  opacity:0;transform:translateX(-6px);
+  transition:all 0.3s;
+}
+.sala-card:hover .sala-enter{opacity:1;transform:translateX(0);}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(10,8,6,0.95);
+  backdrop-filter:blur(8px);
+  opacity:0;pointer-events:none;
+  transition:opacity 0.4s;
+  overflow-y:auto;
+}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+
+.modal{
+  max-width:900px;margin:0 auto;
+  padding:2rem 1.5rem 4rem;
+  transform:translateY(30px);
+  transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.modal-overlay.open .modal{transform:translateY(0);}
+
+.modal-close{
+  position:sticky;top:1rem;
+  float:right;
+  width:40px;height:40px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:50%;
+  color:#fff;font-size:1.2rem;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+  z-index:10;
+}
+.modal-close:hover{background:rgba(201,135,42,0.2);border-color:var(--gold);}
+
+.modal-header{padding:2rem 0 1.5rem;clear:both;}
+.modal-eyebrow{
+  font-family:'Cinzel',serif;
+  font-size:0.62rem;letter-spacing:0.3em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:0.5rem;
+}
+.modal-title{
+  font-family:'Cinzel',serif;
+  font-size:clamp(1.8rem,4vw,2.8rem);
+  font-weight:900;color:#fff;
+  line-height:1.1;margin-bottom:0.8rem;
+}
+.modal-theme{
+  font-size:0.8rem;font-weight:600;
+  color:var(--jade-lt);
+  text-transform:uppercase;letter-spacing:0.1em;
+}
+
+.modal-divider{
+  height:1px;background:rgba(201,135,42,0.2);
+  margin:1.5rem 0;
+}
+
+/* Hero image modal */
+.modal-hero-img{
+  width:100%;height:320px;
+  object-fit:cover;border-radius:4px;
+  margin-bottom:1.5rem;
+  filter:brightness(0.85);
+}
+
+/* Description */
+.modal-desc{
+  font-size:1rem;color:#C8BCA8;
+  line-height:1.85;margin-bottom:2rem;
+}
+
+/* Stats row */
+.modal-stats{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  margin-bottom:2rem;
+}
+.stat-box{
+  flex:1;min-width:120px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(201,135,42,0.15);
+  border-radius:4px;padding:1rem;
+  text-align:center;
+}
+.stat-num{
+  font-family:'Cinzel',serif;
+  font-size:1.6rem;font-weight:700;
+  color:var(--gold);
+}
+.stat-label{
+  font-size:0.7rem;color:var(--mist);
+  letter-spacing:0.08em;text-transform:uppercase;
+  margin-top:0.2rem;
+}
+
+/* Image gallery */
+.gallery-label{
+  font-family:'Cinzel',serif;
+  font-size:0.65rem;letter-spacing:0.3em;
+  text-transform:uppercase;color:var(--mist);
+  margin-bottom:0.8rem;
+}
+.gallery{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:0.6rem;margin-bottom:2rem;
+}
+.gallery img{
+  width:100%;aspect-ratio:4/3;
+  object-fit:cover;border-radius:3px;
+  filter:brightness(0.75) saturate(0.9);
+  transition:filter 0.3s,transform 0.3s;
+  cursor:pointer;
+}
+.gallery img:hover{filter:brightness(1) saturate(1.1);transform:scale(1.02);}
+
+/* Video */
+.video-label{
+  font-family:'Cinzel',serif;
+  font-size:0.65rem;letter-spacing:0.3em;
+  text-transform:uppercase;color:var(--mist);
+  margin-bottom:0.8rem;
+}
+.video-wrap{
+  width:100%;
+  border-radius:4px;overflow:hidden;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(201,135,42,0.2);
+  margin-bottom:2rem;
+  padding:1.8rem 1.5rem;
+  display:flex;flex-direction:column;align-items:center;
+  gap:1rem;text-align:center;
+}
+.video-thumb{font-size:3rem;opacity:0.6;}
+.video-title{
+  font-family:'Cinzel',serif;
+  font-size:0.8rem;color:#C8BCA8;
+  letter-spacing:0.05em;
+  max-width:480px;line-height:1.5;
+}
+.video-btn{
+  display:inline-flex;align-items:center;gap:0.7rem;
+  background:var(--gold);
+  color:#1A1410;
+  font-family:'Cinzel',serif;
+  font-size:0.78rem;font-weight:700;
+  letter-spacing:0.12em;text-transform:uppercase;
+  padding:0.85rem 2rem;border-radius:3px;
+  text-decoration:none;
+  transition:all 0.25s;
+  border:none;cursor:pointer;
+}
+.video-btn:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,135,42,0.35);}
+.video-btn svg{width:18px;height:18px;flex-shrink:0;}
+.video-note{font-size:0.68rem;color:#5A5040;letter-spacing:0.05em;}
+
+/* Highlights list */
+.highlights{
+  background:rgba(45,106,79,0.08);
+  border:1px solid rgba(45,106,79,0.2);
+  border-radius:4px;padding:1.4rem 1.6rem;
+  margin-bottom:2rem;
+}
+.highlights-title{
+  font-family:'Cinzel',serif;
+  font-size:0.68rem;letter-spacing:0.25em;
+  text-transform:uppercase;color:var(--jade-lt);
+  margin-bottom:0.8rem;
+}
+.highlights ul{list-style:none;}
+.highlights ul li{
+  font-size:0.88rem;color:#B0A690;
+  padding:0.4rem 0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  padding-left:1.2rem;position:relative;
+  line-height:1.5;
+}
+.highlights ul li::before{
+  content:'◆';
+  position:absolute;left:0;
+  color:var(--gold);font-size:0.5rem;
+  top:0.55rem;
+}
+.highlights ul li:last-child{border-bottom:none;}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid rgba(201,135,42,0.15);
+  padding:2.5rem 2rem;
+  display:flex;flex-wrap:wrap;
+  justify-content:space-between;align-items:center;
+  gap:1rem;
+  max-width:1100px;margin:0 auto;
+}
+.footer-name{
+  font-family:'Cinzel',serif;
+  font-size:0.85rem;font-weight:700;color:#fff;
+}
+.footer-meta{
+  font-size:0.72rem;color:#5A5040;
+  margin-top:0.2rem;line-height:1.7;
+}
+.footer-tag{
+  font-size:0.68rem;letter-spacing:0.15em;
+  text-transform:uppercase;
+  background:rgba(201,135,42,0.1);
+  border:1px solid rgba(201,135,42,0.25);
+  color:var(--gold);
+  padding:0.4rem 0.9rem;border-radius:2px;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes bounce{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(5px);}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .salas-grid{grid-template-columns:1fr 1fr;}
+  .gallery{grid-template-columns:1fr 1fr;}
+  .modal-stats{flex-direction:row;}
+  nav{padding:0.7rem 1rem;}
+  .nav-links{display:none;}
+}
+@media(max-width:480px){
+  .salas-grid{grid-template-columns:1fr;}
+  .gallery{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="glow"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">Museo Interactivo <span>· De México para el Mundo</span></div>
+  <div class="nav-links">
+    <a href="#hero">Inicio</a>
+    <a href="#salas">Salas</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-glyph">✦ ◈ ✦</div>
+  <div class="hero-eyebrow">Museo Interactivo</div>
+  <h1 class="hero-title">
+    De México
+    <span>para el Mundo</span>
+  </h1>
+  <p class="hero-sub">Recorre seis salas que preservan y difunden el patrimonio prehispánico y colonial de México. Elige una sala y descubre su historia.</p>
+  <div class="hero-divider"><span class="gem"></span></div>
+  <a href="#salas" class="scroll-cta">Explorar salas <span class="arrow">↓</span></a>
+</section>
+
+<!-- SALAS -->
+<section id="salas">
+  <div class="section-eyebrow">Recorrido por el museo</div>
+  <h2 class="section-title">Elige una <span>sala</span></h2>
+
+  <div class="salas-grid">
+
+    <div class="sala-card s1" onclick="openSala(0)">
+      <img class="sala-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Piramide_de_Kukulcan_Chichen_Itza.jpg/640px-Piramide_de_Kukulcan_Chichen_Itza.jpg" alt="Raíces Prehispánicas"/>
+      <div class="sala-body">
+        <div class="sala-num">Sala 01</div>
+        <div class="sala-name">Raíces Prehispánicas</div>
+        <div class="sala-theme">Civilizaciones originarias</div>
+        <p class="sala-preview">Esculturas, códices y cosmovisión mexica y maya.</p>
+        <div class="sala-enter">Entrar a la sala →</div>
+      </div>
+    </div>
+
+    <div class="sala-card s2" onclick="openSala(1)">
+      <img class="sala-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Catedral_Metropolitana_de_la_Ciudad_de_M%C3%A9xico_-_Zocalo.jpg/640px-Catedral_Metropolitana_de_la_Ciudad_de_M%C3%A9xico_-_Zocalo.jpg" alt="Arte Colonial"/>
+      <div class="sala-body">
+        <div class="sala-num">Sala 02</div>
+        <div class="sala-name">Arte Colonial</div>
+        <div class="sala-theme">Influencia europea y mestizaje</div>
+        <p class="sala-preview">Pinturas religiosas, arquitectura barroca y objetos del virreinato.</p>
+        <div class="sala-enter">Entrar a la sala →</div>
+      </div>
+    </div>
+
+    <div class="sala-card s3" onclick="openSala(2)">
+      <img class="sala-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Altardayofdeadoaxaca.jpg/640px-Altardayofdeadoaxaca.jpg" alt="Tradiciones y Creencias"/>
+      <div class="sala-body">
+        <div class="sala-num">Sala 03</div>
+        <div class="sala-name">Tradiciones y Creencias</div>
+        <div class="sala-theme">Festividades y religiosidad popular</div>
+        <p class="sala-preview">Altares, vestimentas y danzas de México.</p>
+        <div class="sala-enter">Entrar a la sala →</div>
+      </div>
+    </div>
+
+    <div class="sala-card s4" onclick="openSala(3)">
+      <img class="sala-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/640px-Good_Food_Display_-_NCI_Visuals_Online.jpg" alt="Gastronomía"/>
+      <div class="sala-body">
+        <div class="sala-num">Sala 04</div>
+        <div class="sala-name">Gastronomía y Vida Cotidiana</div>
+        <div class="sala-theme">Sabores del pasado</div>
+        <p class="sala-preview">+500 platillos típicos. Ingredientes prehispánicos y recetas ilustradas.</p>
+        <div class="sala-enter">Entrar a la sala →</div>
+      </div>
+    </div>
+
+    <div class="sala-card s5" onclick="openSala(4)">
+      <img class="sala-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Codex_Mendoza_folio_2r.jpg/435px-Codex_Mendoza_folio_2r.jpg" alt="Lengua y Literatura"/>
+      <div class="sala-body">
+        <div class="sala-num">Sala 05</div>
+        <div class="sala-name">Lengua y Literatura</div>
+        <div class="sala-theme">Expresiones verbales y escritas</div>
+        <p class="sala-preview">+60 lenguas indígenas vivas. Náhuatl, maya y español antiguo.</p>
+        <div class="sala-enter">Entrar a la sala →</div>
+      </div>
+    </div>
+
+    <div class="sala-card s6" onclick="openSala(5)">
+      <img class="sala-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Weaving_in_Oaxaca.jpg/640px-Weaving_in_Oaxaca.jpg" alt="Patrimonio Vivo"/>
+      <div class="sala-body">
+        <div class="sala-num">Sala 06</div>
+        <div class="sala-name">Patrimonio Vivo</div>
+        <div class="sala-theme">Continuidad cultural</div>
+        <p class="sala-preview">Las tradiciones mexicanas vivas en las comunidades de hoy.</p>
+        <div class="sala-enter">Entrar a la sala →</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-name">Jorge Ángel de la Cruz Juárez</div>
+    <div class="footer-meta">Grupo 4202 · Turno Vespertino · Docente: Jesús Manuel Ayuso de Dios<br>Conciencia Histórica I: De Mesoamérica al siglo XVIII · Especialidad Administración</div>
+  </div>
+  <div class="footer-tag">Rúbrica 2.2</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" onclick="closeSala()">✕</button>
+    <div class="modal-header">
+      <div class="modal-eyebrow" id="mEyebrow"></div>
+      <h2 class="modal-title" id="mTitle"></h2>
+      <div class="modal-theme" id="mTheme"></div>
+    </div>
+    <div class="modal-divider"></div>
+    <img class="modal-hero-img" id="mHeroImg" src="" alt=""/>
+    <p class="modal-desc" id="mDesc"></p>
+    <div class="modal-stats" id="mStats"></div>
+    <div class="gallery-label">Galería de imágenes</div>
+    <div class="gallery" id="mGallery"></div>
+    <div class="video-label">Video documental</div>
+    <div class="video-wrap" id="mVideoWrap">
+      <div class="video-thumb">▶</div>
+      <div class="video-title" id="mVideoTitle">Documental relacionado con la sala</div>
+      <a id="mVideoBtn" class="video-btn" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 1.86-.14 3.23-.44 4.17-.27.86-.87 1.46-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 18c-3.72 0-6.03-.14-6.94-.44a2.5 2.5 0 0 1-1.73-1.73c-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L3 12c0-1.86.14-3.23.44-4.17A2.5 2.5 0 0 1 5.17 6.1c.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5.73c3.72 0 6.03.14 6.94.44a2.5 2.5 0 0 1 1.62 1.73z"/></svg>
+        Ver en YouTube
+      </a>
+      <div class="video-note">Se abrirá en una nueva pestaña</div>
+    </div>
+    <div class="highlights">
+      <div class="highlights-title">Lo que encontrarás en esta sala</div>
+      <ul id="mHighlights"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+// Cursor glow
+document.addEventListener('mousemove',e=>{
+  const g=document.getElementById('glow');
+  g.style.left=e.clientX+'px';
+  g.style.top=e.clientY+'px';
+});
+
+const salas=[
+  {
+    num:'Sala 01',
+    name:'Raíces Prehispánicas',
+    theme:'Civilizaciones originarias',
+    heroImg:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Piramide_de_Kukulcan_Chichen_Itza.jpg/640px-Piramide_de_Kukulcan_Chichen_Itza.jpg',
+    desc:`Las civilizaciones prehispánicas de México son el cimiento de la identidad nacional. Los mexicas, mayas, zapotecas, toltecas y muchos otros pueblos construyeron imperios sofisticados con avanzados conocimientos en astronomía, matemáticas, arquitectura y medicina. Esta sala exhibe esculturas, códices y maquetas de templos que revelan la grandiosidad de estas culturas, con códigos QR que conectan a videos sobre la cosmovisión mexica y maya.`,
+    stats:[
+      {num:'3,000+',label:'Años de historia'},
+      {num:'60+',label:'Civilizaciones'},
+      {num:'500+',label:'Sitios arqueológicos'}
+    ],
+    gallery:[
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Piramide_de_Kukulcan_Chichen_Itza.jpg/640px-Piramide_de_Kukulcan_Chichen_Itza.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Piedra_del_Sol_in_National_Museum_of_Anthropology_%28Mexico%29.jpg/640px-Piedra_del_Sol_in_National_Museum_of_Anthropology_%28Mexico%29.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Codex_Mendoza_folio_2r.jpg/435px-Codex_Mendoza_folio_2r.jpg'
+    ],
+    video:'https://www.youtube.com/watch?v=dYgDJPNFwns',
+    videoTitle:'Civilizaciones prehispánicas de México — Historia y cultura',
+    highlights:[
+      'Escultura mexica: el Calendario Azteca o Piedra del Sol',
+      'Maquetas interactivas de Teotihuacán y Chichén Itzá',
+      'Códices: los libros ilustrados de los antiguos mexicanos',
+      'Cosmovisión: la dualidad, el tiempo cíclico y los dioses',
+      'Sistemas calendáricos: el Tonalpohualli y el Xiuhpohualli'
+    ]
+  },
+  {
+    num:'Sala 02',
+    name:'Arte Colonial',
+    theme:'Influencia europea y mestizaje',
+    heroImg:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Catedral_Metropolitana_de_la_Ciudad_de_M%C3%A9xico_-_Zocalo.jpg/640px-Catedral_Metropolitana_de_la_Ciudad_de_M%C3%A9xico_-_Zocalo.jpg',
+    desc:`El periodo colonial (siglos XVI–XIX) transformó profundamente la sociedad mexicana mediante el encuentro y la fusión de dos mundos. La arquitectura barroca novohispana, las pinturas religiosas, los retablos dorados y los objetos cotidianos del virreinato narran el complejo diálogo entre la cultura indígena y la europea. Esta sala destaca cómo el mestizaje cultural creó expresiones artísticas únicas que hoy definen la identidad de México.`,
+    stats:[
+      {num:'300',label:'Años de virreinato'},
+      {num:'1,000+',label:'Iglesias barrocas'},
+      {num:'5',label:'Patrimonio UNESCO'}
+    ],
+    gallery:[
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Catedral_Metropolitana_de_la_Ciudad_de_M%C3%A9xico_-_Zocalo.jpg/640px-Catedral_Metropolitana_de_la_Ciudad_de_M%C3%A9xico_-_Zocalo.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Mexico_City_Metropolitan_Cathedral_-_Portal_of_Honor.jpg/640px-Mexico_City_Metropolitan_Cathedral_-_Portal_of_Honor.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Sor_Juana_%281751%29.jpg/440px-Sor_Juana_%281751%29.jpg'
+    ],
+    video:'https://www.youtube.com/watch?v=nf3REugbroE',
+    videoTitle:'Arte Colonial en México — Arquitectura barroca y mestizaje cultural',
+    highlights:[
+      'Arquitectura barroca: catedrales, conventos y haciendas',
+      'Pintura religiosa: retablos y murales del siglo XVII',
+      'El sincretismo religioso: mezcla de creencias indígenas y católicas',
+      'Artesanías coloniales: talavera, platería y textiles',
+      'La sociedad novohispana: castas, criollos y peninsulares'
+    ]
+  },
+  {
+    num:'Sala 03',
+    name:'Tradiciones y Creencias',
+    theme:'Festividades y religiosidad popular',
+    heroImg:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Altardayofdeadoaxaca.jpg/640px-Altardayofdeadoaxaca.jpg',
+    desc:`Las tradiciones mexicanas son una de las expresiones culturales más ricas y diversas del mundo. El Día de Muertos, las danzas prehispánicas, las festividades patronales y los rituales de sanación conectan el presente con siglos de historia viva. Esta sala expone altares, vestimentas tradicionales y permite escuchar cantos y presenciar danzas regionales mediante pantallas interactivas, mostrando cómo más de 500 tradiciones se mantienen vivas en las comunidades de México.`,
+    stats:[
+      {num:'500+',label:'Tradiciones vivas'},
+      {num:'68',label:'Grupos étnicos'},
+      {num:'2008',label:'Patrimonio UNESCO'}
+    ],
+    gallery:[
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Altardayofdeadoaxaca.jpg/640px-Altardayofdeadoaxaca.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Day_of_the_Dead_2010.jpg/640px-Day_of_the_Dead_2010.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Danza_de_los_Voladores_de_Papantla.jpg/640px-Danza_de_los_Voladores_de_Papantla.jpg'
+    ],
+    video:'https://www.youtube.com/watch?v=9GQCZ-v3PgE',
+    videoTitle:'Día de Muertos — Patrimonio Cultural Inmaterial de la Humanidad',
+    highlights:[
+      'Día de Muertos: Patrimonio Cultural Inmaterial de la Humanidad',
+      'Danza de los Voladores de Papantla: ritual totonaca',
+      'Guelaguetza: celebración zapoteca de Oaxaca',
+      'Vestimentas regionales: huipiles, rebozos y trajes bordados',
+      'Medicina tradicional: curanderismo y herbolaria mexicana'
+    ]
+  },
+  {
+    num:'Sala 04',
+    name:'Gastronomía y Vida Cotidiana',
+    theme:'Sabores del pasado y presente',
+    heroImg:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/640px-Good_Food_Display_-_NCI_Visuals_Online.jpg',
+    desc:`La gastronomía mexicana fue reconocida por la UNESCO como Patrimonio Cultural Inmaterial de la Humanidad en 2010. Con más de 500 platillos típicos que varían por región, los sabores de México tienen raíces profundas en las culturas prehispánicas: el maíz, el chile, el cacao y el aguacate son ingredientes sagrados que han alimentado a estas tierras por milenios. Esta sala recrea la experiencia sensorial con ingredientes, utensilios antiguos y recetas ilustradas.`,
+    stats:[
+      {num:'500+',label:'Platillos típicos'},
+      {num:'2010',label:'Patrimonio UNESCO'},
+      {num:'59',label:'Variedades de chile'}
+    ],
+    gallery:[
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/640px-Good_Food_Display_-_NCI_Visuals_Online.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Chiles_in_Nogada_Dish.jpg/640px-Chiles_in_Nogada_Dish.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Mole_sauce.jpg/640px-Mole_sauce.jpg'
+    ],
+    video:'https://www.youtube.com/watch?v=OvPpzxuoJ5Y',
+    videoTitle:'Gastronomía Mexicana — Patrimonio UNESCO, sabores y tradición',
+    highlights:[
+      'El maíz: base sagrada de la civilización mesoamericana',
+      'Mole: la salsa más compleja de la cocina mexicana (+20 ingredientes)',
+      'El cacao: bebida de los dioses en la cultura maya y azteca',
+      'Utensilios prehispánicos: metate, comal, molcajete y tlecuil',
+      'Mercados tradicionales: tianguis prehispánicos que perviven hoy'
+    ]
+  },
+  {
+    num:'Sala 05',
+    name:'Lengua y Literatura',
+    theme:'Expresiones verbales y escritas',
+    heroImg:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Codex_Mendoza_folio_2r.jpg/435px-Codex_Mendoza_folio_2r.jpg',
+    desc:`México alberga una de las mayores diversidades lingüísticas del mundo, con más de 60 lenguas indígenas vivas organizadas en 11 familias lingüísticas. El náhuatl, el maya, el zapoteco y el mixteco son solo algunas de las lenguas que guardan siglos de historia, poesía, mitos y conocimiento. Esta sala presenta fragmentos de textos en náhuatl, maya y español antiguo, con audioguías que narran leyendas y permiten escuchar estas lenguas en voz viva.`,
+    stats:[
+      {num:'60+',label:'Lenguas indígenas'},
+      {num:'11',label:'Familias lingüísticas'},
+      {num:'1,000+',label:'Años de escritura'}
+    ],
+    gallery:[
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Codex_Mendoza_folio_2r.jpg/435px-Codex_Mendoza_folio_2r.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Piramide_de_Kukulcan_Chichen_Itza.jpg/640px-Piramide_de_Kukulcan_Chichen_Itza.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Altardayofdeadoaxaca.jpg/640px-Altardayofdeadoaxaca.jpg'
+    ],
+    video:'https://www.youtube.com/watch?v=6yEFOBR_H44',
+    videoTitle:'Lenguas Indígenas de México — Náhuatl, Maya y más',
+    highlights:[
+      'Náhuatl: lengua del Imperio Azteca, aún hablan ~1.7 millones de personas',
+      'Escritura jeroglífica maya: uno de los sistemas más complejos del mundo',
+      'El Popol Vuh: libro sagrado de la creación maya-quiché',
+      'Cantares Mexicanos: poesía náhuatl prehispánica conservada en manuscritos',
+      'Literatura colonial: el encuentro de dos tradiciones escritas'
+    ]
+  },
+  {
+    num:'Sala 06',
+    name:'Patrimonio Vivo',
+    theme:'Continuidad cultural en el presente',
+    heroImg:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Weaving_in_Oaxaca.jpg/640px-Weaving_in_Oaxaca.jpg',
+    desc:`El patrimonio cultural no vive solo en museos: late en cada comunidad, en cada familia, en cada artesano que trabaja el barro o teje un huipil. Esta sala es el espacio final del recorrido, donde el pasado y el presente se unen. Aquí los visitantes descubren cómo las tradiciones prehispánicas y coloniales continúan transformándose y adaptándose en las comunidades mexicanas del siglo XXI, demostrando que la cultura es un organismo vivo en constante evolución.`,
+    stats:[
+      {num:'68',label:'Pueblos indígenas'},
+      {num:'15',label:'Patrimonio UNESCO MX'},
+      {num:'∞',label:'Generaciones'}
+    ],
+    gallery:[
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Weaving_in_Oaxaca.jpg/640px-Weaving_in_Oaxaca.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Altardayofdeadoaxaca.jpg/640px-Altardayofdeadoaxaca.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Codex_Mendoza_folio_2r.jpg/435px-Codex_Mendoza_folio_2r.jpg'
+    ],
+    video:'https://www.youtube.com/watch?v=WH4HXoFRSKQ',
+    videoTitle:'Patrimonio Vivo de México — Tradiciones y comunidades indígenas hoy',
+    highlights:[
+      'Artesanías: textiles, cerámica, orfebrería y trabajo en madera',
+      'Medicina tradicional: herbolaria y rituales de sanación actuales',
+      'Fiestas patronales: sincretismo católico-indígena vivo en cada pueblo',
+      'Lenguas en resistencia: programas de revitalización lingüística',
+      'Gastronomía viva: cocinas regionales reconocidas mundialmente'
+    ]
+  }
+];
+
+function openSala(i){
+  const s=salas[i];
+  document.getElementById('mEyebrow').textContent=s.num;
+  document.getElementById('mTitle').textContent=s.name;
+  document.getElementById('mTheme').textContent=s.theme;
+  document.getElementById('mHeroImg').src=s.heroImg;
+  document.getElementById('mHeroImg').alt=s.name;
+  document.getElementById('mDesc').textContent=s.desc;
+
+  // Stats
+  const statsEl=document.getElementById('mStats');
+  statsEl.innerHTML=s.stats.map(st=>`
+    <div class="stat-box">
+      <div class="stat-num">${st.num}</div>
+      <div class="stat-label">${st.label}</div>
+    </div>`).join('');
+
+  // Gallery
+  const galleryEl=document.getElementById('mGallery');
+  galleryEl.innerHTML=s.gallery.map(src=>`<img src="${src}" alt="${s.name}" loading="lazy" onerror="this.style.background='#2a2218';this.style.opacity='0.3';"/>`).join('');
+
+  // Video
+  const videoBtn=document.getElementById('mVideoBtn');
+  videoBtn.href=s.video;
+  document.getElementById('mVideoTitle').textContent=s.videoTitle||'Documental relacionado con esta sala';
+
+  // Highlights
+  const hlEl=document.getElementById('mHighlights');
+  hlEl.innerHTML=s.highlights.map(h=>`<li>${h}</li>`).join('');
+
+  const overlay=document.getElementById('modalOverlay');
+  overlay.classList.add('open');
+  overlay.scrollTop=0;
+  document.body.style.overflow='hidden';
+}
+
+function closeSala(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function handleOverlayClick(e){
+  if(e.target===document.getElementById('modalOverlay')) closeSala();
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeSala();});
+</script>
+</body>
+</html>
